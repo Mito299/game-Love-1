@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>เกมจับคู่รัก</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #ffe6e6;
+            text-align: center;
+            padding: 10px;
+            margin: 0;
+        }
+
+        h1 {
+            color: #ff4d4d;
+            font-size: 24px;
+            margin: 10px 0;
+        }
+
+        .game-board {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            max-width: 90%;
+            margin: 0 auto;
+        }
+
+        .card {
+            width: 100%;
+            height: 0;
+            padding-bottom: 100%;
+            /* ทำให้การ์ดเป็นสี่เหลี่ยมจัตุรัส */
+            background-color: #ffcccc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            cursor: pointer;
+            border-radius: 10px;
+            transition: background-color 0.3s;
+            position: relative;
+        }
+
+        .card span {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .card.flipped {
+            background-color: #ff4d4d;
+            color: white;
+        }
+
+        .card.matched {
+            background-color: #66cc66;
+            cursor: default;
+        }
+
+        .popup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            text-align: center;
+            width: 80%;
+            max-width: 300px;
+        }
+
+        .popup.show {
+            display: block;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>เกมจับคู่รัก 💖</h1>
+    <div class="game-board" id="game-board">
+        <!-- การ์ดจะถูกเพิ่มโดย JavaScript -->
+    </div>
+    <div class="popup" id="popup">
+        <h2>phom rak khun mak na my babe💕</h2>
+        <p>ขอบคุณที่เล่นเกมนี้กับผมนะ!</p>
+    </div>
+
+    <script>
+        const cards = ['❤️', '🐶', '🍕', '💝', '❤️', '🐶', '🍕', '💝', '🥰', '🫰', '💝', '🫰'];
+        let flippedCards = [];
+        let matchedCards = [];
+
+        // สร้างการ์ด
+        const gameBoard = document.getElementById('game-board');
+        cards.sort(() => Math.random() - 0.5); // สุ่มลำดับการ์ด
+        cards.forEach((emoji, index) => {
+            const card = document.createElement('div');
+            card.classList.add('card');
+            card.dataset.emoji = emoji; // เก็บข้อมูลรูปภาพไว้ใน dataset
+            card.innerHTML = '<span></span>'; // เริ่มต้นการ์ดเป็นกล่องว่าง
+            card.addEventListener('click', flipCard);
+            gameBoard.appendChild(card);
+        });
+
+        // ฟังก์ชันพลิกการ์ด
+        function flipCard() {
+            if (flippedCards.length < 2 && !this.classList.contains('flipped')) {
+                this.querySelector('span').textContent = this.dataset.emoji; // แสดงรูปภาพ
+                this.classList.add('flipped');
+                flippedCards.push(this);
+
+                if (flippedCards.length === 2) {
+                    setTimeout(checkMatch, 500);
+                }
+            }
+        }
+
+        // ตรวจสอบการจับคู่
+        function checkMatch() {
+            const [card1, card2] = flippedCards;
+            if (card1.dataset.emoji === card2.dataset.emoji) {
+                card1.classList.add('matched');
+                card2.classList.add('matched');
+                matchedCards.push(card1, card2);
+
+                if (matchedCards.length === cards.length) {
+                    showPopup();
+                }
+            } else {
+                card1.querySelector('span').textContent = ''; // ปิดการ์ด
+                card2.querySelector('span').textContent = ''; // ปิดการ์ด
+                card1.classList.remove('flipped');
+                card2.classList.remove('flipped');
+            }
+            flippedCards = [];
+        }
+
+        // แสดงป็อปอัพ
+        function showPopup() {
+            const popup = document.getElementById('popup');
+            popup.classList.add('show');
+        }
+    </script>
+</body>
+
+</html>
